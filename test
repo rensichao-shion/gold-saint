@@ -1,0 +1,126 @@
+#include <iostream>
+using namespace std;
+struct Node 
+{
+	uint32_t fid;
+	uint32_t tid;
+	struct Node* prev;
+	struct Node* next;
+};
+struct Node* head;//头节点
+struct Node* insertptr;//插入节点
+
+struct Node* insert_node(struct Node* head, uint32_t fid, uint32_t tid)
+{
+	struct Node* begin = head;
+	//  检测 1) `fid` and `tid` **CANNOT** be the same
+	if (fid == tid)
+	{
+		cout << "insert error" << endl;
+		return head;
+	}
+	// 检测  2) it should **NOT** hold duplicated node
+	while (begin->next != 0)
+	{
+		begin = begin->next;
+		if (begin->fid == fid && begin->tid == tid)
+		{
+			cout << "insert error" << endl;
+			return head;
+		}
+	}
+	begin = head;
+	// 检测  head 为空
+	if (begin == 0)
+	{
+		cout << "insert error" << endl;
+		return head;
+	}
+	// 检测  只有头节点
+	else if (begin->next==0)
+	{
+		head->next = insertptr;
+		insertptr->prev = head;
+		insertptr->next = 0;
+		insertptr->fid = fid;
+		insertptr->tid = tid;
+		return head;
+	}
+	else
+	{
+		head->next->prev = insertptr;
+		insertptr->next = head->next;
+		head->next = insertptr;
+		insertptr->prev = head;
+		insertptr->fid = fid;
+		insertptr->tid = tid;
+		return head;
+	}
+}
+
+
+struct Node* remove_node(struct Node* head, uint32_t fid, uint32_t tid)
+{
+	struct Node* ptr = head;
+	bool p = false;
+	if (ptr == 0 || ptr->next ==0)
+	{
+		cout << "remove error" << endl;
+		return head;
+	}
+	while (ptr->next != 0)
+	{
+		ptr = ptr->next;
+		if (ptr->fid == fid && ptr->tid == tid)
+		{
+			ptr->prev->next = ptr->next;
+			ptr->next->prev = ptr->prev;
+			p = true;
+			return ptr;
+		}
+	}
+	if (p == false)
+	{
+		cout << "remove error" << endl;
+		return head;
+	}
+}
+//测试主程序
+int main()
+{
+	head = new Node;
+	insertptr = new Node;
+	head -> next = 0;
+	int n=3;
+	Node* ptr = new Node[3];
+	ptr->prev = head;
+	head->next = ptr;
+	int i, j;
+	for (i = 0;i < n; i++)
+	{
+		
+		ptr->fid = i+1;
+		ptr->tid = ptr->fid + 1;
+		if (i < 2)
+		{
+			ptr->next = ptr + 1;
+			ptr->next->prev = ptr;
+			ptr = ptr + 1;
+		}
+		
+		
+	}
+	ptr->next = 0;
+	cout << i << endl;
+	//ptr = insert_node(head, 3, 2);
+	//ptr = remove_node(head, 3, 3);
+	for (ptr = head; ptr->next != 0; )
+	{
+		cout << ptr->next->fid << ' ' << ptr->next->tid << ' ' << endl;
+		ptr = ptr->next;
+	}
+	delete head;
+	delete insertptr;
+	
+
+}
